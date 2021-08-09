@@ -263,33 +263,23 @@ window.addEventListener(`DOMContentLoaded`, () => {
 				display: block;
 				margin: 0 auto;
 			`;
+			form.insertAdjacentElement('afterend', statusMessage);
 
 			form.insertAdjacentElement('afterend', statusMessage);
 
-
-			// XMLHttp запрос - устаревший
-			// const request = new XMLHttpRequest();
-			// request.open('POST', 'server.php');
-			//request.setRequestHeader('Content-type', 'application/json')
-
-
-			// НЕ ИСПОЛЬЗОВАТЬ ЗАГОЛОВОК при XMLHttpRequest +FormData
-			//request.setRequestHeader('Content-type', 'multipart/form-data') 
 			const formData = new FormData(form);
 
-			// const object = {};
-			// formData.forEach((value, key) => {
-			// 	object[key] = value;
-			// });
-			// const json = JSON.stringify(object);
-
+			const object = {};
+			formData.forEach((value, key) => {
+				object[key] = value;
+			});
 
 			fetch('server.php', {
 				method: "POST",
-				body: formData,
-				// headers: { //для formData- не испольщуем headers 
-				// 	'Content-type': 'application/json'
-				// },
+				body: JSON.stringify(object),
+				headers: { //для formData- не испольщуем headers 
+					'Content-type': 'application/json'
+				},
 			}).then(data => data.text()) // перобразуем в text для удобства чтения
 				.then(data => {
 					console.log(data);
@@ -301,23 +291,6 @@ window.addEventListener(`DOMContentLoaded`, () => {
 				}).finally(() => {
 					form.reset();//обновляем форму, убираем сообщение
 				});
-
-			//request.send(json); //  для XMLHttpRequest +FormData (formData);
-
-
-			// request.addEventListener(`load`, () => {
-			// 	if (request.status === 200) {
-			// 		console.log(request.response);
-			// 		showThanksModal(message.success);
-			// 		form.reset();//обновляем форму, убираем сообщение
-
-			// 		statusMessage.remove()
-
-			// 	} else {
-			// 		showThanksModal(message.failure);
-
-			// 	}
-			// })
 
 		})
 	}
@@ -343,21 +316,5 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			closeModal();
 		}, 40000);
 	}
-	// fetch('https://jsonplaceholder.typicode.com/todos/1')// get запрос на тестовый сервер
-	// 	.then(response => response.json())
-	// 	.then(json => console.log(json));
-
-	// fetch('https://jsonplaceholder.typicode.com/posts', {// post запрос на тестовый сервер
-	// 	method: "POST",
-	// 	body: JSON.stringify({
-	// 		name: "Alex",
-	// 	}),
-	// 	headers: {
-	// 		'Content-type': 'application/json'
-	// 	},
-	// })
-	// 	.then(response => response.json())
-	// 	.then(json => console.log(json));
-
 
 });
