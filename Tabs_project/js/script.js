@@ -154,7 +154,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		}
 	});
 
-	//const modalTimeoutId = setTimeout(openModal, 5000); //открываем по таймеру 
+	const modalTimeoutId = setTimeout(openModal, 50000); //открываем по таймеру 
 
 	window.addEventListener(`scroll`, showModalByScroll);//открываем при полной прокрутке странцы
 
@@ -243,7 +243,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	const forms = document.querySelectorAll(`form`);
 
 	const message = {
-		loading: `Загрузка`,
+		loading: `img/form/spinner.svg`,
 		success: `Спасибо! Скоро мы с вами свяжемся`,
 		failure: `Что-то пошло не так.....`,
 	};
@@ -257,10 +257,14 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		form.addEventListener(`submit`, (e) => {
 			e.preventDefault(); // убирает дейстиве по умолчению- перезагрузку страницы
 
-			const statusMessage = document.createElement(`div`);
-			statusMessage.classList.add(`status`)
-			statusMessage.textContent = message.loading;
-			form.append(statusMessage);
+			const statusMessage = document.createElement(`img`);
+			statusMessage.src = message.loading;
+			statusMessage.style.cssText = `
+				display: block;
+				margin: 0 auto;
+			`;
+
+			form.insertAdjacentElement('afterend', statusMessage);
 
 			const request = new XMLHttpRequest();
 			request.open('POST', 'server.php');
@@ -303,7 +307,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		openModal();
 
 		const thanksModal = document.createElement(`div`);
-		thanksModal.classList.add(`.modal__dialog`);
+		thanksModal.classList.add(`modal__dialog`);
 		thanksModal.innerHTML = `
 		<div class="modal__content">
 			<div data-close class="modal__close">&times;</div>
@@ -316,9 +320,11 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			prevModalDialog.classList.add(`show`);
 			prevModalDialog.classList.remove(`hide`);
 			closeModal();
-		}, 4000)
+		}, 40000);
 	}
-
+	fetch('https://jsonplaceholder.typicode.com/todos/1')
+		.then(response => response.json())
+		.then(json => console.log(json));
 
 
 });
