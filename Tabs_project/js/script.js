@@ -1,6 +1,42 @@
 'use strict';
 window.addEventListener(`DOMContentLoaded`, () => {
 
+
+	// parser-------------------
+	const body = document.querySelector('body');
+	let textNode = [];
+	function recursy(elem) {
+		elem.childNodes.forEach(node => {
+
+			// if (node.nodeName === '#text') {// парсим все узлы кроме тестовых
+			// 	return;
+			// } else {
+			// 	console.log(node);
+			// 	recursy(node);
+			// }
+
+			if (node.nodeName.match(/^H\d/)) {// парсим только заголовки
+				textNode.push({
+					header: node.nodeName,
+					content: node.textContent,
+				})
+			} else recursy(node);
+		});
+	}
+	recursy(body);
+	console.log(textNode);
+
+	// fetch('https://jsonplaceholder.typicode.com/posts', { // указываеv сервер куда необходимо отправлять данные
+	// 	method: "POST",
+	// 	headers: { //для formData- не испольщуем headers
+	// 		'Content-type': 'application/json'
+	// 	},
+	// 	body: JSON.stringify(textNode),
+	// })
+	// 	.then(response => response.json())
+	// 	.then(json => console.log(json))
+
+
 	//tabs=======================================
 	const tabs = document.querySelectorAll(`.tabheader__item`),
 		tabsContent = document.querySelectorAll(`.tabcontent`),
@@ -117,18 +153,19 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	const modalOpen = document.querySelectorAll(`[data-modal]`),
 		modal = document.querySelector(`.modal`),
 
-		toggClassModal = (modal, clas) => {
-			modal.classList.toggle(clas);
-		},
 		openModal = () => {
-			toggClassModal(modal, `show`);
+			modal.classList.add(`show`);
+			modal.classList.remove(`hide`);
 			document.body.style.overflow = `hidden`;
 			clearTimeout(modalTimeoutId);
 		},
+
 		closeModal = () => {
-			toggClassModal(modal, `show`);
+			modal.classList.remove(`show`);
+			modal.classList.add(`hide`);
 			document.body.style.overflow = ``;
 		},
+
 		showModalByScroll = () => {// проверям пролностью ли прокручен документ
 			if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
 				openModal();
@@ -138,9 +175,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 
 	modalOpen.forEach(el => {
-		el.addEventListener(`click`, () => {
-			openModal()
-		});
+		el.addEventListener(`click`, openModal);
 	});
 
 	modal.addEventListener(`click`, (e) => {//закрытие при клике не на окно а на подложку
@@ -159,172 +194,169 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	window.addEventListener(`scroll`, showModalByScroll);//открываем при полной прокрутке странцы
 
 
-
-	// карточка товара Class
-
-	class MenuCart {
-		constructor(src, alt, subtitle, descr, price, parentSelector, ...classes) {
-			this.src = src;
-			this.alt = alt;
-			this.subtitle = subtitle;
-			this.descr = descr;
-			this.price = price;
-			this.classes = classes;
-			this.parent = document.querySelector(parentSelector);
-			this.transfer = 27;
-			this.changeToUAH();
-		}
-		changeToUAH() {
-			this.price *= this.transfer;
-		}
-
-		render() {
-			const elem = document.createElement(`div`);
-			if (!this.classes.length) {
-				this.element = `menu__item`;
-				elem.classList.add(this.element)
-			} else {
-				this.classes.forEach(classN => elem.classList.add(classN));
-			};
-
-			elem.innerHTML = `
-				<img src=${this.src} alt=${this.alt}>
-				<h3 class="menu__item-subtitle">${this.subtitle}</h3>
-				<div class="menu__item-descr">${this.descr}</div>
-				<div class="menu__item-divider"></div>
-				<div class="menu__item-price">
-					<div class="menu__item-cost">Цена:</div>
-					<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-				</div>
-	 		   `;
-			this.parent.append(elem);
-		}
-	}
-	new MenuCart(
-		"img/tabs/vegy.jpg",
-		"vegy",
-		`Меню "Фитнес"`,
-		`Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих
-овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной
-ценой и высоким качеством!`,
-		9,
-		`.menu .container`,
-
-	).render();
-
-	new MenuCart(
-		"img/tabs/elite.jpg",
-		"elite",
-		`Меню “Премиум”`,
-		`В меню  “Премиум”  мы  используем  не  только  красивый  дизайн упаковки, но
-		и качественное исполнение блюд. Красная рыба, морепродукты, фрукты и свежайшие овощи - ресторанное меню без похода
-		в ресторан!`,
-		14,
-		`.menu .container`,
-		`menu__item`,
-	).render();
-
-	new MenuCart(
-		"img/tabs/post.jpg",
-		"post",
-		`Меню "Постное"`,
-		`Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие
-		продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное
-		количество белков за счет тофу и импортных вегетарианских стейков.`,
-		21,
-		`.menu .container`,
-		`menu__item`,
-	).render();
-
-
-
-	//Forms
-
-	const forms = document.querySelectorAll(`form`);
-
-	const message = {
-		loading: `img/form/spinner.svg`,
-		success: `Спасибо! Скоро мы с вами свяжемся`,
-		failure: `Что-то пошло не так.....`,
-	};
-
-	forms.forEach(item => {
-		postData(item);
-	});
-
-
-	function postData(form) {
-		form.addEventListener(`submit`, (e) => {
-			e.preventDefault(); // убирает дейстиве по умолчению- перезагрузку страницы
-
-			const statusMessage = document.createElement(`img`);
-			statusMessage.src = message.loading;
-			statusMessage.style.cssText = `
-				display: block;
-				margin: 0 auto;
-			`;
-
-			form.insertAdjacentElement('afterend', statusMessage);
-
-			const request = new XMLHttpRequest();
-			request.open('POST', 'server.php');
-			request.setRequestHeader('Content-type', 'application/json')
-
-
-			// НЕ ИСПОЛЬЗОВАТЬ ЗАГОЛОВОК при XMLHttpRequest +FormData
-			//request.setRequestHeader('Content-type', 'multipart/form-data') 
-			const formData = new FormData(form);
-
-			const object = {};
-			formData.forEach((value, key) => {
-				object[key] = value;
-			});
-			const json = JSON.stringify(object);
-
-			request.send(json); //  для XMLHttpRequest +FormData (formData);
-
-
-			request.addEventListener(`load`, () => {
-				if (request.status === 200) {
-					console.log(request.response);
-					showThanksModal(message.success);
-					form.reset();//обновляем форму, убираем сообщение
-
-					statusMessage.remove()
-
+	/*
+		// карточка товара Class
+	
+		class MenuCart {
+			constructor(src, alt, subtitle, descr, price, parentSelector, ...classes) {
+				this.src = src;
+				this.alt = alt;
+				this.subtitle = subtitle;
+				this.descr = descr;
+				this.price = price;
+				this.classes = classes;
+				this.parent = document.querySelector(parentSelector);
+				this.transfer = 27;
+				this.changeToUAH();
+			}
+			changeToUAH() {
+				this.price *= this.transfer;
+			}
+	
+			render() {
+				const elem = document.createElement(`div`);
+				if (!this.classes.length) {
+					this.element = `menu__item`;
+					elem.classList.add(this.element)
 				} else {
-					showThanksModal(message.failure);
-
-				}
+					this.classes.forEach(classN => elem.classList.add(classN));
+				};
+	
+				elem.innerHTML = `
+						<img src=${this.src} alt=${this.alt}>
+						<h3 class="menu__item-subtitle">${this.subtitle}</h3>
+						<div class="menu__item-descr">${this.descr}</div>
+						<div class="menu__item-divider"></div>
+						<div class="menu__item-price">
+							<div class="menu__item-cost">Цена:</div>
+							<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+						</div>
+							 `;
+				this.parent.append(elem);
+			}
+		}
+	
+		const getResurce = async (url) => {
+			const res = await fetch(url);
+	
+			if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
+				throw new Error(`Could not fetch ${url}, status ${res.status}`)
+			}
+			return await res.json();
+		}
+	
+		getResurce('http://localhost:3000/menu')
+			.then((data) => {
+				data.forEach(({ img, altimg, title, descr, price, }) => {
+					new MenuCart(img, altimg, title, descr, price, `.menu .container`).render()
+				})
 			})
-
-		})
-	}
-
-	function showThanksModal(massege) {
-		const prevModalDialog = document.querySelector(`.modal__dialog`);
-		prevModalDialog.classList.add(`hide`);
-		openModal();
-
-		const thanksModal = document.createElement(`div`);
-		thanksModal.classList.add(`modal__dialog`);
-		thanksModal.innerHTML = `
-		<div class="modal__content">
-			<div data-close class="modal__close">&times;</div>
-			<div class="modal__title">${massege}</div>
-		</div>
-		`;
-		document.querySelector(`.modal`).append(thanksModal);
-		setTimeout(() => {
-			thanksModal.remove();
-			prevModalDialog.classList.add(`show`);
-			prevModalDialog.classList.remove(`hide`);
-			closeModal();
-		}, 40000);
-	}
-	fetch('https://jsonplaceholder.typicode.com/todos/1')
-		.then(response => response.json())
-		.then(json => console.log(json));
-
-
+	
+	
+		// еще один  спосооб если не требуется шаблонов.
+		// getResurce('http://localhost:3000/menu')
+		// 	.then((data) => createCart(data))
+	
+		// function createCart(data) {
+		// 	data.forEach(({ img, altimg, title, descr, price, }) => {
+		// 		const elem = document.createElement('div');
+		// 		elem.classList.add('menu__item');
+		// 		elem.innerHTML = `
+		// 		<img src=${img} alt=${altimg}>
+		// 		<h3 class="menu__item-subtitle">${title}</h3>
+		// 		<div class="menu__item-descr">${descr}</div>
+		// 		<div class="menu__item-divider"></div>
+		// 		<div class="menu__item-price">
+		// 			<div class="menu__item-cost">Цена:</div>
+		// 			<div class="menu__item-total"><span>${price}</span> грн/день</div>
+		// 		</div>
+		// 		`;
+		// 		document.querySelector(`.menu .container`).append(elem)
+		// 	})
+		// }
+	
+		//Forms
+	
+		const forms = document.querySelectorAll(`form`);
+	
+		const message = {
+			loading: `img/form/spinner.svg`,
+			success: `Спасибо! Скоро мы с вами свяжемся`,
+			failure: `Что-то пошло не так.....`,
+		};
+	
+		forms.forEach(item => {
+			bindPostData(item);
+		});
+	
+		const postData = async (url, data) => {
+			const res = await fetch(url, {
+				method: "POST",
+				headers: { //для formData- не испольщуем headers
+					'Content-type': 'application/json'
+				},
+				body: data,
+			});
+			return await res.json();
+		}
+	
+		function bindPostData(form) {
+			form.addEventListener(`submit`, (e) => {
+				e.preventDefault(); // убирает дейстиве по умолчению- перезагрузку страницы
+	
+				const statusMessage = document.createElement(`img`);
+				statusMessage.src = message.loading;
+				statusMessage.style.cssText = `
+						display: block;
+						margin: 0 auto;
+					`;
+				form.insertAdjacentElement('afterend', statusMessage);
+	
+				form.insertAdjacentElement('afterend', statusMessage);
+	
+				const formData = new FormData(form);
+	
+				const json = JSON.stringify(Object.fromEntries(formData.entries()));
+	
+	
+				postData('http://localhost:3000/requests', json)
+					.then(data => {
+						console.log(data);
+						showThanksModal(message.success);
+						statusMessage.remove();
+					}).catch(() => {
+						showThanksModal(message.failure);
+					}).finally(() => {
+						form.reset();//обновляем форму, убираем сообщение
+					});
+	
+			})
+		}
+	
+		function showThanksModal(massege) {
+			const prevModalDialog = document.querySelector(`.modal__dialog`);
+			prevModalDialog.classList.add(`hide`);
+			openModal();
+	
+			const thanksModal = document.createElement(`div`);
+			thanksModal.classList.add(`modal__dialog`);
+			thanksModal.innerHTML = `
+				<div class="modal__content">
+					<div data-close class="modal__close">&times;</div>
+					<div class="modal__title">${massege}</div>
+				</div>
+				`;
+			document.querySelector(`.modal`).append(thanksModal);
+			setTimeout(() => {
+				thanksModal.remove();
+				prevModalDialog.classList.add(`show`);
+				prevModalDialog.classList.remove(`hide`);
+				closeModal();
+			}, 40000);
+		}
+	
+		fetch('http://localhost:3000/menu')
+			.then(data => data.json())
+			.then(data => console.log(data))
+	*/
 });

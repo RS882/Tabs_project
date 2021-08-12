@@ -117,18 +117,19 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	const modalOpen = document.querySelectorAll(`[data-modal]`),
 		modal = document.querySelector(`.modal`),
 
-		toggClassModal = (modal, clas) => {
-			modal.classList.toggle(clas);
-		},
 		openModal = () => {
-			toggClassModal(modal, `show`);
+			modal.classList.add(`show`);
+			modal.classList.remove(`hide`);
 			document.body.style.overflow = `hidden`;
 			clearTimeout(modalTimeoutId);
 		},
+
 		closeModal = () => {
-			toggClassModal(modal, `show`);
+			modal.classList.remove(`show`);
+			modal.classList.add(`hide`);
 			document.body.style.overflow = ``;
 		},
+
 		showModalByScroll = () => {// проверям пролностью ли прокручен документ
 			if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
 				openModal();
@@ -138,9 +139,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 
 	modalOpen.forEach(el => {
-		el.addEventListener(`click`, () => {
-			openModal()
-		});
+		el.addEventListener(`click`, openModal);
 	});
 
 	modal.addEventListener(`click`, (e) => {//закрытие при клике не на окно а на подложку
@@ -188,55 +187,57 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			};
 
 			elem.innerHTML = `
-				<img src=${this.src} alt=${this.alt}>
-				<h3 class="menu__item-subtitle">${this.subtitle}</h3>
-				<div class="menu__item-descr">${this.descr}</div>
-				<div class="menu__item-divider"></div>
-				<div class="menu__item-price">
-					<div class="menu__item-cost">Цена:</div>
-					<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
-				</div>
-	 		   `;
+						<img src=${this.src} alt=${this.alt}>
+						<h3 class="menu__item-subtitle">${this.subtitle}</h3>
+						<div class="menu__item-descr">${this.descr}</div>
+						<div class="menu__item-divider"></div>
+						<div class="menu__item-price">
+							<div class="menu__item-cost">Цена:</div>
+							<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+						</div>
+							 `;
 			this.parent.append(elem);
 		}
 	}
-	new MenuCart(
-		"img/tabs/vegy.jpg",
-		"vegy",
-		`Меню "Фитнес"`,
-		`Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих
-овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной
-ценой и высоким качеством!`,
-		9,
-		`.menu .container`,
 
-	).render();
+	const getResurce = async (url) => {
+		const res = await fetch(url);
 
-	new MenuCart(
-		"img/tabs/elite.jpg",
-		"elite",
-		`Меню “Премиум”`,
-		`В меню  “Премиум”  мы  используем  не  только  красивый  дизайн упаковки, но
-		и качественное исполнение блюд. Красная рыба, морепродукты, фрукты и свежайшие овощи - ресторанное меню без похода
-		в ресторан!`,
-		14,
-		`.menu .container`,
-		`menu__item`,
-	).render();
+		if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
+			throw new Error(`Could not fetch ${url}, status ${res.status}`)
+		}
+		return await res.json();
+	}
 
-	new MenuCart(
-		"img/tabs/post.jpg",
-		"post",
-		`Меню "Постное"`,
-		`Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие
-		продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное
-		количество белков за счет тофу и импортных вегетарианских стейков.`,
-		21,
-		`.menu .container`,
-		`menu__item`,
-	).render();
+	getResurce('http://localhost:3000/menu')
+		.then((data) => {
+			data.forEach(({ img, altimg, title, descr, price, }) => {
+				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render()
+			})
+		})
 
 
+	// еще один  спосооб если не требуется шаблонов.
+	// getResurce('http://localhost:3000/menu')
+	// 	.then((data) => createCart(data))
+
+	// function createCart(data) {
+	// 	data.forEach(({ img, altimg, title, descr, price, }) => {
+	// 		const elem = document.createElement('div');
+	// 		elem.classList.add('menu__item');
+	// 		elem.innerHTML = `
+	// 		<img src=${img} alt=${altimg}>
+	// 		<h3 class="menu__item-subtitle">${title}</h3>
+	// 		<div class="menu__item-descr">${descr}</div>
+	// 		<div class="menu__item-divider"></div>
+	// 		<div class="menu__item-price">
+	// 			<div class="menu__item-cost">Цена:</div>
+	// 			<div class="menu__item-total"><span>${price}</span> грн/день</div>
+	// 		</div>
+	// 		`;
+	// 		document.querySelector(`.menu .container`).append(elem)
+	// 	})
+	// }
 
 	//Forms
 
@@ -249,42 +250,43 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	};
 
 	forms.forEach(item => {
-		postData(item);
+		bindPostData(item);
 	});
 
+	const postData = async (url, data) => {
+		const res = await fetch(url, {
+			method: "POST",
+			headers: { //для formData- не испольщуем headers
+				'Content-type': 'application/json'
+			},
+			body: data,
+		});
+		return await res.json();
+	}
 
-	function postData(form) {
+	function bindPostData(form) {
 		form.addEventListener(`submit`, (e) => {
 			e.preventDefault(); // убирает дейстиве по умолчению- перезагрузку страницы
 
 			const statusMessage = document.createElement(`img`);
 			statusMessage.src = message.loading;
 			statusMessage.style.cssText = `
-				display: block;
-				margin: 0 auto;
-			`;
+						display: block;
+						margin: 0 auto;
+					`;
 			form.insertAdjacentElement('afterend', statusMessage);
 
 			form.insertAdjacentElement('afterend', statusMessage);
 
 			const formData = new FormData(form);
 
-			const object = {};
-			formData.forEach((value, key) => {
-				object[key] = value;
-			});
+			const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
-			fetch('server.php', {
-				method: "POST",
-				body: JSON.stringify(object),
-				headers: { //для formData- не испольщуем headers 
-					'Content-type': 'application/json'
-				},
-			}).then(data => data.text()) // перобразуем в text для удобства чтения
+
+			postData('http://localhost:3000/requests', json)
 				.then(data => {
 					console.log(data);
 					showThanksModal(message.success);
-
 					statusMessage.remove();
 				}).catch(() => {
 					showThanksModal(message.failure);
@@ -303,11 +305,11 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		const thanksModal = document.createElement(`div`);
 		thanksModal.classList.add(`modal__dialog`);
 		thanksModal.innerHTML = `
-		<div class="modal__content">
-			<div data-close class="modal__close">&times;</div>
-			<div class="modal__title">${massege}</div>
-		</div>
-		`;
+				<div class="modal__content">
+					<div data-close class="modal__close">&times;</div>
+					<div class="modal__title">${massege}</div>
+				</div>
+				`;
 		document.querySelector(`.modal`).append(thanksModal);
 		setTimeout(() => {
 			thanksModal.remove();
@@ -316,5 +318,6 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			closeModal();
 		}, 40000);
 	}
+
 
 });
