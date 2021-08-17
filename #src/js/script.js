@@ -318,6 +318,60 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			closeModal();
 		}, 40000);
 	}
+	// slider 1 -------------------------
 
+	const slides = document.querySelectorAll(`.offer__slide`),
+		switchs = document.querySelector(`.offer__slider-counter`),
+		prev = switchs.querySelector(`.offer__slider-prev`),
+		next = switchs.querySelector(`.offer__slider-next`),
+		total = slides.length,
+		slideHide = (slide) => {
+			slide.classList.add(`hide`);
+			slide.classList.remove(`show`, `fade`)
+		},
+		slideShow = (slide) => {
+			slide.classList.remove(`hide`);
+			slide.classList.add(`show`, `fade`)
+		},
+		setCurrentNum = (id, num) => {
+			document.querySelector(id).textContent = (`0` + num).slice(-2);
+		};
+
+	let current = 0;
+	prev.style = `visibility: hidden`;
+	setCurrentNum(`#total`, total);
+	setCurrentNum(`#current`, current + 1)
+
+	slides.forEach(el => slideHide(el);
+	slideShow(slides[0]);
+
+	switchs.addEventListener(`click`, e => {
+
+		const target = e.target,
+			addVisible = (elem, is) => {
+				next.style = `visibility: visible;`;
+				prev.style = `visibility: visible;`;
+				if (current === is) {
+					elem.style = `visibility: hidden;`
+					return;
+				}
+			};
+
+
+		if (target && target.closest(`.offer__slider-prev`)) {
+			slideHide(slides[current]);
+			--current;
+			slideShow(slides[current]);
+			setCurrentNum(`#current`, current + 1)
+			addVisible(prev, 0);
+		}
+		if (target && target.closest(`.offer__slider-next`)) {
+			slideHide(slides[current]);
+			++current;
+			slideShow(slides[current]);
+			setCurrentNum(`#current`, current + 1)
+			addVisible(next, total - 1);
+		}
+	})
 
 });
