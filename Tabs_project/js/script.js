@@ -39,7 +39,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	});
 
 	//Timer=================================
-	const deadLine = `2021-08-06`;
+	const deadLine = `2021-12-31`;
 
 	function setPromoDate(selector, deadLine) {
 		const datePromo = new Date(deadLine),
@@ -202,15 +202,18 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	const getResurce = async (url) => {
 		const res = await fetch(url);
-
+		console.log(res);
 		if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
 			throw new Error(`Could not fetch ${url}, status ${res.status}`)
 		}
 		return await res.json();
 	}
+	//console.log(getResurce('http://localhost:3000/menu'));
 
-	getResurce('http://localhost:3000/menu')
+	getResurce('http://localhost:3333/menu') // запускаем сервер  json-server --watch -p 3333 db.json
 		.then((data) => {
+
+			console.log(data);
 			data.forEach(({ img, altimg, title, descr, price, }) => {
 				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render()
 			})
@@ -276,14 +279,14 @@ window.addEventListener(`DOMContentLoaded`, () => {
 					`;
 			form.insertAdjacentElement('afterend', statusMessage);
 
-			form.insertAdjacentElement('afterend', statusMessage);
+
 
 			const formData = new FormData(form);
 
 			const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
 
-			postData('http://localhost:3000/requests', json)
+			postData('http://localhost:3333/requests', json)
 				.then(data => {
 					console.log(data);
 					showThanksModal(message.success);
@@ -373,51 +376,175 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	// 	}
 	// })
 
-	//slider 1 бескончный--------------
-	const slides = document.querySelectorAll(`.offer__slide`),
+	//slider 1 бесконечный--------------
+	// const slides = document.querySelectorAll(`.offer__slide`),
+	// 	prev = document.querySelector(`.offer__slider-prev`),
+	// 	next = document.querySelector(`.offer__slider-next`),
+	// 	total = document.querySelector(`#total`),
+	// 	current = document.querySelector(`#current`),
+
+
+	// 	setNumber = (elem, number) => {
+
+	// 		if (number < 10) {
+	// 			elem.textContent = `0${number}`;
+	// 		} else {
+	// 			elem.textContent = `${number}`;
+	// 		}
+	// 	};
+
+	// let index = 1;
+	// setNumber(total, slides.length);
+
+	// const showSlide = (n) => {
+	// 	const slideHide = slide => {
+	// 		slide.classList.add(`hide`);
+	// 		slide.classList.remove(`show`, `fade`)
+	// 	},
+	// 		slideShow = slide => {
+	// 			slide.classList.remove(`hide`);
+	// 			slide.classList.add(`show`, `fade`)
+	// 		};
+
+	// 	if (n < 1) {
+	// 		index = slides.length;
+	// 	}
+	// 	if (n > slides.length) {
+	// 		index = 1;
+	// 	}
+	// 	slides.forEach(el => slideHide(el));
+	// 	slideShow(slides[index - 1]);
+	// 	setNumber(current, index);
+	// },
+	// 	plusSlide = (n) => {
+	// 		showSlide(index += n)
+	// 	};
+
+	// showSlide(index);
+	// prev.addEventListener(`click`, () => plusSlide(-1));
+	// next.addEventListener(`click`, () => plusSlide(1));
+
+	//slider 2 --------------
+	const slidesWrapper = document.querySelector(`.offer__slider-wrapper`),
+		slidesFields = slidesWrapper.querySelector(`.offer__slider-inner`),
+		width = window.getComputedStyle(slidesWrapper).width,//ширина окна слайдера
+		slides = slidesWrapper.querySelectorAll(`.offer__slide`),
 		prev = document.querySelector(`.offer__slider-prev`),
 		next = document.querySelector(`.offer__slider-next`),
 		total = document.querySelector(`#total`),
 		current = document.querySelector(`#current`),
-		setNumber = (elem, number) => {
-
-			if (number < 10) {
-				elem.textContent = `0${number}`;
+		dots = [],
+		addCurrentNumber = () => {
+			if (slides.length < 10) {
+				current.textContent = `0${slideIndex}`;
 			} else {
-				elem.textContent = `${number}`;
+				current.textContent = slideIndex;
 			}
-		};
-
-	let index = 1;
-	setNumber(total, slides.length);
-
-	const showSlide = (n) => {
-		const slideHide = slide => {
-			slide.classList.add(`hide`);
-			slide.classList.remove(`show`, `fade`)
 		},
-			slideShow = slide => {
-				slide.classList.remove(`hide`);
-				slide.classList.add(`show`, `fade`)
-			};
-
-		if (n < 1) {
-			index = slides.length;
-		}
-		if (n > slides.length) {
-			index = 1;
-		}
-		slides.forEach(el => slideHide(el));
-		slideShow(slides[index - 1]);
-		setNumber(current, index);
-	},
-		plusSlide = (n) => {
-			showSlide(index += n)
+		addActiveDot = () => {
+			dots.forEach(dot => {
+				dot.classList.remove('_active');
+			});
+			dots[slideIndex - 1].classList.add('_active');
 		};
 
-	showSlide(index);
-	prev.addEventListener(`click`, () => plusSlide(-1));
-	next.addEventListener(`click`, () => plusSlide(1));
+
+	let slideIndex = 1,
+		offset = 0;
+
+	if (slides.length < 10) {
+		total.textContent = `0${slides.length}`;
+		current.textContent = `0${slideIndex}`;
+	} else {
+		total.textContent = slides.length;
+		current.textContent = slideIndex;
+	}
+
+
+	slidesFields.style.width = 100 * slides.length + '%'; //устанавливаем ширину всего слайдера
+	slidesFields.style.display = 'flex';
+	slidesFields.style.transition = '0.5s all';
+
+	slidesWrapper.style.overflow = 'hidden';
+
+	slides.forEach(slide => slide.style.width = width);// устанвливаем ширину каждого слайда как ширину окна слайдера
+
+	//slider навигация------------------------
+	const dotWrapper = document.createElement(`ol`);
+	dotWrapper.classList.add('carousel-indicators');
+	document.querySelector(`.offer__slider`).append(dotWrapper);
+
+	for (let i = 0; i < slides.length; i++) {
+		const dot = document.createElement(`li`);
+		dot.classList.add('dot');
+		dot.setAttribute('data-slides', i);
+
+		if (i == 0) dot.classList.add('_active');
+
+		dotWrapper.append(dot);
+
+		dots.push(dot);
+	}
+	//----------------
+
+	next.addEventListener('click', () => {
+		if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+			offset = 0; // если последний слайд
+		} else {
+			offset += +width.slice(0, width.length - 2);
+		}
+
+		slidesFields.style.transform = `translateX(-${offset}px`;
+
+		if (slideIndex == slides.length) {
+			slideIndex = 1;
+		} else {
+			slideIndex++;
+		}
+
+		addCurrentNumber();
+		addActiveDot();
+
+
+
+	});
+	prev.addEventListener('click', () => {
+		if (offset == 0) {
+			offset = +width.slice(0, width.length - 2) * (slides.length - 1)// если первый слайд
+		} else {
+			offset -= +width.slice(0, width.length - 2);
+		}
+
+		slidesFields.style.transform = `translateX(-${offset}px`;
+
+		if (slideIndex == 1) {
+			slideIndex = slides.length;
+		} else {
+			slideIndex--;
+		}
+
+		addCurrentNumber();
+		addActiveDot();
+	});
+
+
+	//slider навигация
+	dotWrapper.addEventListener('click', (e) => {
+
+		if (e.target && e.target.hasAttribute('data-slides')) {
+
+			const dotNumber = +e.target.getAttribute('data-slides');
+			slideIndex = dotNumber + 1;
+
+			offset = dotNumber * +width.slice(0, width.length - 2);
+
+			slidesFields.style.transform = `translateX(-${offset}px`;
+
+			addCurrentNumber();
+			addActiveDot();
+		}
+	});
+	//----------------------------------------
 
 })
 
