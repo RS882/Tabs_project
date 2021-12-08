@@ -202,7 +202,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	const getResurce = async (url) => {
 		const res = await fetch(url);
-		console.log(res);
+		// console.log(res);
 		if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
 			throw new Error(`Could not fetch ${url}, status ${res.status}`)
 		}
@@ -213,7 +213,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	getResurce('http://localhost:3333/menu') // запускаем сервер  json-server --watch -p 3333 db.json
 		.then((data) => {
 
-			console.log(data);
+			// console.log(data);
 			data.forEach(({ img, altimg, title, descr, price, }) => {
 				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render()
 			})
@@ -258,7 +258,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	const postData = async (url, data) => {
 		const res = await fetch(url, {
-			method: "POST",
+			method: 'POST',
 			headers: { //для formData- не испольщуем headers
 				'Content-type': 'application/json'
 			},
@@ -288,7 +288,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 			postData('http://localhost:3333/requests', json)
 				.then(data => {
-					console.log(data);
+					// console.log(data);
 					showThanksModal(message.success);
 					statusMessage.remove();
 				}).catch(() => {
@@ -486,12 +486,15 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		dots.push(dot);
 	}
 	//----------------
+	function deleteNotDigits(str) {
+		return +str.replace(/\D/g, '');
+	}
 
 	next.addEventListener('click', () => {
-		if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+		if (offset == deleteNotDigits(width) * (slides.length - 1)) {
 			offset = 0; // если последний слайд
 		} else {
-			offset += +width.slice(0, width.length - 2);
+			offset += deleteNotDigits(width);
 		}
 
 		slidesFields.style.transform = `translateX(-${offset}px`;
@@ -510,9 +513,9 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	});
 	prev.addEventListener('click', () => {
 		if (offset == 0) {
-			offset = +width.slice(0, width.length - 2) * (slides.length - 1)// если первый слайд
+			offset = deleteNotDigits(width) * (slides.length - 1)// если первый слайд
 		} else {
-			offset -= +width.slice(0, width.length - 2);
+			offset -= deleteNotDigits(width);
 		}
 
 		slidesFields.style.transform = `translateX(-${offset}px`;
@@ -536,7 +539,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			const dotNumber = +e.target.getAttribute('data-slides');
 			slideIndex = dotNumber + 1;
 
-			offset = dotNumber * +width.slice(0, width.length - 2);
+			offset = dotNumber * deleteNotDigits(width);
 
 			slidesFields.style.transform = `translateX(-${offset}px`;
 
