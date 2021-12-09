@@ -548,6 +548,85 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		}
 	});
 	//----------------------------------------
+	//Calc---------------------------------
+
+	const result = document.querySelector(`.calculating__result span`);
+	const userParams = {
+		sex: `famale`,
+		ratio: `1.375`,
+		height: null,
+		weight: null,
+		age: null,
+	};
+
+	const setResult = (params) => {
+		for (const key in params) {
+			if (!params[key]) {
+				result.textContent = '____';
+				return;
+			}
+		}
+
+
+		if (params.sex === `female`) {
+			result.textContent =
+				Math.round((88.36 + (13.4 * params.weight) + (4.8 * params.height) - (5.7 * params.age)) * params.ratio)
+
+
+		}
+		if (params.sex === `male`) {
+			result.textContent =
+				Math.round((447.6 + (9.2 * params.weight) + (3.1 * params.height) - (4.3 * params.age)) * params.ratio)
+
+
+		}
+	};
+
+	setResult(userParams);
+
+	const getStaticParams = (parentSelector, activeClass) => {
+		document.querySelector(parentSelector).addEventListener(`click`, (e) => {
+			if (e.target.matches([`[data-sex]`, `[data-ratio]`])) {
+				const setData = (varValue, attr) => (e.target.hasAttribute(attr))
+					? e.target.getAttribute(attr)
+					: varValue;
+				userParams.sex = setData(userParams.sex, `data-sex`);
+				console.log(userParams.sex);
+
+				userParams.ratio = +setData(userParams.ratio, `data-ratio`)
+				document.querySelectorAll(`${parentSelector} div`).forEach(e => e.classList.remove(activeClass));
+				e.target.classList.add(activeClass);
+				setResult(userParams);
+			}
+		});
+	};
+
+	const getDinamicParams = (selector) => {
+		const input = document.querySelector(selector);
+		input.addEventListener(`input`, (e) => {
+			switch (input.getAttribute('id')) {
+				case 'height':
+					userParams.height = +input.value;
+					break;
+				case 'weight':
+					userParams.weight = +input.value;
+					break;
+				case 'age':
+					userParams.age = +input.value;
+					break;
+			}
+			setResult(userParams);
+		});
+
+
+	};
+
+	getStaticParams('#gender', `calculating__choose-item_active`);
+	getStaticParams('.calculating__choose_big', `calculating__choose-item_active`);
+	getDinamicParams('#height');
+	getDinamicParams('#weight');
+	getDinamicParams('#age');
 
 })
+
 
