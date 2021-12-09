@@ -552,7 +552,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	const result = document.querySelector(`.calculating__result span`);
 	const userParams = {
-		sex: `famale`,
+		sex: `female`,
 		ratio: `1.375`,
 		height: null,
 		weight: null,
@@ -566,20 +566,10 @@ window.addEventListener(`DOMContentLoaded`, () => {
 				return;
 			}
 		}
-
-
-		if (params.sex === `female`) {
-			result.textContent =
-				Math.round((88.36 + (13.4 * params.weight) + (4.8 * params.height) - (5.7 * params.age)) * params.ratio)
-
-
-		}
-		if (params.sex === `male`) {
-			result.textContent =
-				Math.round((447.6 + (9.2 * params.weight) + (3.1 * params.height) - (4.3 * params.age)) * params.ratio)
-
-
-		}
+		const formula = (c) => Math.round((c[0] + (c[1] * params.weight)
+			+ (c[2] * params.height) - (c[3] * params.age)) * params.ratio);
+		if (params.sex === `female`) result.textContent = formula([88.36, 13.4, 4.8, 5.7]);
+		if (params.sex === `male`) result.textContent = formula([447.6, 9.2, 3.1, 4.3]);
 	};
 
 	setResult(userParams);
@@ -591,8 +581,6 @@ window.addEventListener(`DOMContentLoaded`, () => {
 					? e.target.getAttribute(attr)
 					: varValue;
 				userParams.sex = setData(userParams.sex, `data-sex`);
-				console.log(userParams.sex);
-
 				userParams.ratio = +setData(userParams.ratio, `data-ratio`)
 				document.querySelectorAll(`${parentSelector} div`).forEach(e => e.classList.remove(activeClass));
 				e.target.classList.add(activeClass);
@@ -604,6 +592,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	const getDinamicParams = (selector) => {
 		const input = document.querySelector(selector);
 		input.addEventListener(`input`, (e) => {
+
 			switch (input.getAttribute('id')) {
 				case 'height':
 					userParams.height = +input.value;
