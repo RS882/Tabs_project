@@ -538,6 +538,7 @@ a {
 }
 
 .calculating__choose_medium {
+  position: relative;
   width: 743px;
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
@@ -585,6 +586,32 @@ a {
 
 .calculating__result span {
   font-size: 42px;
+}
+
+.input_alert {
+  position: absolute;
+  border: 1px solid #bb4040;
+  width: 170px;
+  height: 30px;
+  font-size: 10px;
+  color: #bb4040;
+  background: #fff;
+  z-index: 10;
+}
+
+.input_alert::before,
+.input_alert::after {
+  content: "";
+  position: absolute;
+  left: 20px;
+  bottom: -21px;
+  border: 10px solid transparent;
+  border-top: 10px solid #bb4040;
+}
+
+.input_alert::after {
+  border-top: 10px solid white;
+  bottom: -20px;
 }
 
 .menu {
