@@ -561,17 +561,16 @@ window.addEventListener(`DOMContentLoaded`, () => {
 			age: null,
 		};
 
-	// const initialCalc = (selector, activeClass) => {
-	// 	document.querySelectorAll(`${selector} div`).forEach(e => {
-	// 		e.classList.remove(activeClass);
-	// 		if (e.getAttribute(`[data-sex]`) === userParams.sex
-	// 			|| e.getAttribute(`[data-ratio]`) === userParams.ratio) e.classList.add(activeClass);
+	const initialCalc = (selector, activeClass) => {
+		document.querySelectorAll(`${selector} div`).forEach(e => {
+			e.classList.remove(activeClass);
+			if (e.getAttribute(`data-sex`) === userParams.sex
+				|| +e.getAttribute(`data-ratio`) === +userParams.ratio) e.classList.add(activeClass);
+		});
+	};
 
-	// 	});
-	// };
-
-	// initialCalc('#gender', `calculating__choose-item_active`);
-	// initialCalc('.calculating__choose_big', `calculating__choose-item_active`);
+	initialCalc('#gender', `calculating__choose-item_active`);
+	initialCalc('.calculating__choose_big', `calculating__choose-item_active`);
 
 	const setResult = (params) => {
 		for (const key in params) {
@@ -591,11 +590,9 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	const getStaticParams = (parentSelector, activeClass) => {
 		document.querySelector(parentSelector).addEventListener(`click`, (e) => {
 			if (e.target.matches([`[data-sex]`, `[data-ratio]`])) {
-
 				const setData = (varValue, attr) => (e.target.hasAttribute(attr))
 					? e.target.getAttribute(attr)
 					: varValue;
-
 				userParams.sex = setData(userParams.sex, `data-sex`);
 				userParams.ratio = +setData(userParams.ratio, `data-ratio`)
 				document.querySelectorAll(`${parentSelector} div`).forEach(e => e.classList.remove(activeClass));
