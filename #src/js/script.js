@@ -593,17 +593,33 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		const input = document.querySelector(selector);
 		input.addEventListener(`input`, (e) => {
 
-			switch (input.getAttribute('id')) {
-				case 'height':
-					userParams.height = +input.value;
-					break;
-				case 'weight':
-					userParams.weight = +input.value;
-					break;
-				case 'age':
-					userParams.age = +input.value;
-					break;
-			}
+			if (input.value.match(/\D/g)) {
+				const addAlert = (parentElem) => {
+					if (!parentElem.nextElementSibling.classList.contains(`input_alert`)) {
+						const alert = document.createElement(`div`);
+						alert.className = `input_alert`;
+						alert.textContent = `!Ошибка! Можно вводить только цифры!`
+						parentElem.after(alert);
+					}
+				}
+				input.value = (input.value.match(/\d/g) || []).join('');
+				addAlert(input)
+			} else {
+				if (input.nextElementSibling.classList.contains(`input_alert`)) input.nextElementSibling.remove();
+
+				switch (input.getAttribute('id')) {
+					case 'height':
+						userParams.height = +input.value;
+						break;
+					case 'weight':
+						userParams.weight = +input.value;
+						break;
+					case 'age':
+						userParams.age = +input.value;
+						break;
+				}
+			};
+
 			setResult(userParams);
 		});
 
