@@ -595,7 +595,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 			if (input.value.match(/\D/g)) {
 				const addAlert = (parentElem) => {
-					if (!parentElem.nextElementSibling.classList.contains(`input_alert`)) {
+					if (!parentElem.nextElementSibling || !parentElem.nextElementSibling.classList.contains(`input_alert`)) {
 						const alert = document.createElement(`div`);
 						alert.className = `input_alert`;
 						alert.textContent = `!Ошибка! Можно вводить только цифры!`
@@ -605,7 +605,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 				input.value = (input.value.match(/\d/g) || []).join('');
 				addAlert(input)
 			} else {
-				if (input.nextElementSibling.classList.contains(`input_alert`)) input.nextElementSibling.remove();
+				if (input.nextElementSibling && input.nextElementSibling.classList.contains(`input_alert`)) input.nextElementSibling.remove();
 
 				switch (input.getAttribute('id')) {
 					case 'height':
