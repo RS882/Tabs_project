@@ -113,11 +113,12 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	setClock(`.timer`, deadLine);
 
 	//Modal===================================
-
+	let timeID;
 	const modalOpen = document.querySelectorAll(`[data-modal]`),
 		modal = document.querySelector(`.modal`),
 
 		openModal = () => {
+
 			modal.classList.add(`show`);
 			modal.classList.remove(`hide`);
 			document.body.style.overflow = `hidden`;
@@ -125,6 +126,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 		},
 
 		closeModal = () => {
+
 			modal.classList.remove(`show`);
 			modal.classList.add(`hide`);
 			document.body.style.overflow = ``;
@@ -144,6 +146,12 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	modal.addEventListener(`click`, (e) => {//закрытие при клике не на окно а на подложку
 		if (e.target === modal || e.target.getAttribute('data-close') == ``) {
+			clearTimeout(timeID);
+			const thank = document.querySelector(`[data-thank]`);
+			thank && thank.remove();
+			const prevModalDialog = document.querySelector(`.modal__dialog`)
+			prevModalDialog.classList.add(`show`);
+			prevModalDialog.classList.remove(`hide`);
 			closeModal();
 		}
 	});
@@ -307,6 +315,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 		const thanksModal = document.createElement(`div`);
 		thanksModal.classList.add(`modal__dialog`);
+		thanksModal.dataset.thank = true;
 		thanksModal.innerHTML = `
 				<div class="modal__content">
 					<div data-close class="modal__close">&times;</div>
@@ -314,12 +323,13 @@ window.addEventListener(`DOMContentLoaded`, () => {
 				</div>
 				`;
 		document.querySelector(`.modal`).append(thanksModal);
-		setTimeout(() => {
+
+		timeID = setTimeout(() => {
 			thanksModal.remove();
 			prevModalDialog.classList.add(`show`);
 			prevModalDialog.classList.remove(`hide`);
 			closeModal();
-		}, 40000);
+		}, 4000);
 	}
 	// slider 1 (не бесконечный) Мой вариант-------------------------
 	// const slides = document.querySelectorAll(`.offer__slide`),
