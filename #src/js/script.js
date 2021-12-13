@@ -146,7 +146,7 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	modal.addEventListener(`click`, (e) => {//закрытие при клике не на окно а на подложку
 		if (e.target === modal || e.target.getAttribute('data-close') == ``) {
-			clearTimeout(timeID);
+			timeID && clearTimeout(timeID);
 			const thank = document.querySelector(`[data-thank]`);
 			thank && thank.remove();
 			const prevModalDialog = document.querySelector(`.modal__dialog`)
@@ -210,22 +210,20 @@ window.addEventListener(`DOMContentLoaded`, () => {
 
 	const getResurce = async (url) => {
 		const res = await fetch(url);
-		// console.log(res);
+
 		if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
 			throw new Error(`Could not fetch ${url}, status ${res.status}`)
 		}
 		return await res.json();
-	}
-	//console.log(getResurce('http://localhost:3000/menu'));
+	};
+
 
 	getResurce('http://localhost:3333/menu') // запускаем сервер  json-server --watch -p 3333 db.json
 		.then((data) => {
-
-			// console.log(data);
 			data.forEach(({ img, altimg, title, descr, price, }) => {
-				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render()
-			})
-		})
+				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render();
+			});
+		});
 
 
 	// еще один  спосооб если не требуется шаблонов.
