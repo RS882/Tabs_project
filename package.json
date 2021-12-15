@@ -29,6 +29,8 @@
 		"json-server": "^0.17.0",
 		"sass": "latest",
 		"transform-runtime": "0.0.0",
-		"webp-converter": "^2.2.3"
+		"webp-converter": "^2.2.3",
+		"webpack": "^5.65.0",
+		"webpack-cli": "^4.9.1"
 	}
 }

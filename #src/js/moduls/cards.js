@@ -1,4 +1,4 @@
-const cards = (){
+const cards = () => {
 
 	// карточка товара Class
 
