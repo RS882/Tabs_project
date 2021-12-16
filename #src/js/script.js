@@ -16,7 +16,15 @@ window.addEventListener(`DOMContentLoaded`, () => {
 	cards();
 	forms(`.modal`, `form`, `.modal__dialog`, modalTimeoutId);
 	modal(`.modal`, `[data-modal]`, `.modal__dialog`, modalTimeoutId);
-	slider();
-	tabs();
-	timer();
+	slider({
+		slide: '.offer__slide',
+		nextArrow: '.offer__slider-next',
+		prevArrow: '.offer__slider-prev',
+		totalCounter: '#total',
+		currentCounter: '#current',
+		wrapper: '.offer__slider-wrapper',
+		field: '.offer__slider-inner'
+	});
+	tabs(`.tabheader__item`, `.tabcontent`, `.tabheader__items`, `tabheader__item_active`);
+	timer(`.timer`, `.promotion__descr`, `2021-12-31`);
 });

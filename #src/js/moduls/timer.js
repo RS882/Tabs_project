@@ -1,8 +1,6 @@
-const timer = () => {
+const timer = (timerSelector, promotionDateSelecor, deadLine) => {
 	//Timer=================================
-	const deadLine = `2021-12-31`;
-
-	function setPromoDate(selector, deadLine) {
+	const setPromoDate = (selector, deadLine) => {
 		const datePromo = new Date(deadLine),
 			selec = document.querySelector(selector),
 			day = (`0` + datePromo.getDate()).slice(-2),
@@ -25,9 +23,9 @@ const timer = () => {
 				+ `${day} ${month} в 00: 00`);
 		selec.lastChild.remove();
 		selec.append(elem);
-	}
+	};
 
-	function getTimeRemaining(endTime) {
+	const getTimeRemaining = (endTime) => {
 		const t = Date.parse(endTime) - Date.parse(new Date());
 		if (t > 0) {
 			return {
@@ -45,33 +43,26 @@ const timer = () => {
 			minutes: 0,
 			seconds: 0,
 		};
-
-	}
-
-	function setClock(selector, endTime) {
+	};
+	const setClock = (selector, endTime) => {
 		const timer = document.querySelector(selector),
 			days = timer.querySelector(`#days`),
 			hours = timer.querySelector(`#hours`),
 			minutes = timer.querySelector(`#minutes`),
 			seconds = timer.querySelector(`#seconds`),
 			timeInterval = setInterval(updateClock, 1000);
-		updateClock();
-
 		function updateClock() {
 			const t = getTimeRemaining(endTime);
-
 			days.innerHTML = (`0` + t.days).slice(-2);
 			hours.innerHTML = (`0` + t.hours).slice(-2);
 			minutes.innerHTML = (`0` + t.minutes).slice(-2);
 			seconds.innerHTML = (`0` + t.seconds).slice(-2);
-
-			if (t.total <= 0) {
-				clearInterval(timeInterval);
-			}
+			t.total <= 0 && clearInterval(timeInterval);
 		}
-	}
-	setPromoDate(`.promotion__descr`, deadLine);
-	setClock(`.timer`, deadLine);
+		updateClock();
 
+	}
+	setPromoDate(promotionDateSelecor, deadLine);
+	setClock(timerSelector, deadLine);
 }
 export default timer;

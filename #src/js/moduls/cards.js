@@ -1,7 +1,7 @@
+import { getResurce } from "../servises/servises";
+
 const cards = () => {
-
 	// карточка товара Class
-
 	class MenuCart {
 		constructor(src, alt, subtitle, descr, price, parentSelector, ...classes) {
 			this.src = src;
@@ -41,24 +41,12 @@ const cards = () => {
 		}
 	}
 
-	const getResurce = async (url) => {
-		const res = await fetch(url);
-
-		if (!res.ok) {// если сервер выдал ошибку - выводм в консоль сообщение
-			throw new Error(`Could not fetch ${url}, status ${res.status}`)
-		}
-		return await res.json();
-	};
-
-
 	getResurce('http://localhost:3333/menu') // запускаем сервер  json-server --watch -p 3333 db.json
 		.then((data) => {
 			data.forEach(({ img, altimg, title, descr, price, }) => {
 				new MenuCart(img, altimg, title, descr, price, `.menu .container`).render();
 			});
 		});
-
-
 }
 
 export default cards;

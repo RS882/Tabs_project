@@ -29,19 +29,18 @@ const forms = (modalSelector, formSelector, modalWrapperSelector, modalTimeoutId
 			const json = JSON.stringify(Object.fromEntries(formData.entries()));
 			postData('http://localhost:3333/requests', json)
 				.then(data => {
-					// console.log(data);
-
 					showThanksModal(message.success);
 					statusMessage.remove();
 				}).catch(() => {
 					showThanksModal(message.failure);
+					statusMessage.remove();
 				}).finally(() => {
 					form.querySelector(`button`).removeAttribute(`disabled`);
 					form.reset();//обновляем форму, убираем сообщение
 				});
 
-		})
-	}
+		});
+	};
 
 	const showThanksModal = (massege) => {
 		const prevModalDialog = document.querySelector(modalWrapperSelector);
@@ -56,7 +55,7 @@ const forms = (modalSelector, formSelector, modalWrapperSelector, modalTimeoutId
 					<div class="modal__title">${massege}</div>
 				</div>
 				`;
-		document.querySelector(`.modal`).append(thanksModal);
+		document.querySelector(modalSelector).append(thanksModal);
 
 		timeID = setTimeout(() => {
 			thanksModal.remove();
@@ -64,7 +63,7 @@ const forms = (modalSelector, formSelector, modalWrapperSelector, modalTimeoutId
 			prevModalDialog.classList.remove(`hide`);
 			closeModal(modalSelector);
 		}, 3000);
-	}
+	};
 
 	forms.forEach(item => bindPostData(item));
 }
